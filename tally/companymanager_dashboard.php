@@ -165,6 +165,16 @@ if (isset($_POST['createBranch'])) {
 if (isset($_POST['addNewInvoice'])) {
     // Fetch data from the form
     $companyID = $_SESSION['company_id'];
+    $branchId = $_POST['branch'];
+$branchNameSql = "SELECT branch_name FROM branches WHERE branch_id = '$branchId'";
+$branchNameResult = $conn->query($branchNameSql);
+
+if ($branchNameResult->num_rows > 0) {
+    $row = $branchNameResult->fetch_assoc();
+    $branchName = $row['branch_name'];
+} else {
+    $branchName = 'Unknown Branch'; // Default value if branch name not found
+}
     // Continue with inserting the invoice
     $supplierID =  $_POST['supplierId'];
     $address = $_POST['address'];
@@ -194,12 +204,25 @@ if (isset($_POST['addNewInvoice'])) {
     $invoiceNumber = generateInvoiceNumber($conn, $companyID, $invoiceDate);
 
     // Insert invoice details into purchase_report table
-    $invoiceSql = "INSERT INTO purchase_report (bill_no, company_id, date, supplier_id, supplier_name, mobile_no, paid_amount, grand_total, due_amount, status)
-        VALUES ('$invoiceNumber', '$companyID',CAST('$invoiceDate' AS DATE), '$supplierID','$supplierName' ,'$contact_no', '$paidAmount', '$grandTotal','$dueamount','$invoiceStatus')";
+   // Insert invoice details into purchase_report table
+// Insert invoice details into purchase_report table
+$invoiceSql = "INSERT INTO purchase_report (bill_no, company_id, branch_name, date, supplier_id, supplier_name, mobile_no, paid_amount, grand_total, due_amount, status)
+    VALUES ('$invoiceNumber', '$companyID', '$branchName', CAST('$invoiceDate' AS DATE), '$supplierID','$supplierName' ,'$contact_no', '$paidAmount', '$grandTotal','$dueamount','$invoiceStatus')";
+
 
     // Execute the invoice insertion query
     if ($conn->query($invoiceSql) === TRUE) {
         // Loop through each product and insert into purchased_product table
+        $branchId = $_POST['branch'];
+        $branchNameSql = "SELECT branch_name FROM branches WHERE branch_id = '$branchId'";
+        $branchNameResult = $conn->query($branchNameSql);
+        
+        if ($branchNameResult->num_rows > 0) {
+            $row = $branchNameResult->fetch_assoc();
+            $branchName = $row['branch_name'];
+        } else {
+            $branchName = 'Unknown Branch'; // Default value if branch name not found
+        }
         $products = $_POST['product'];
         $prices = $_POST['price'];
         $quantities = $_POST['quantity'];
@@ -216,16 +239,16 @@ if (isset($_POST['addNewInvoice'])) {
             $quantity = implode(', ', $quantities[$i]);
             $tax = implode(', ', $taxes[$i]);
 
-            $productSql = "INSERT INTO purchased_product (bill_no, product_name, price, quantity, tax) 
-                VALUES ('$invoiceNumber', '$productName', '$price', '$quantity', '$tax')";
+            $productSql = "INSERT INTO purchased_product (bill_no, branch_name, product_name, price, quantity, tax) 
+                VALUES ('$invoiceNumber','$branchName', '$productName', '$price', '$quantity', '$tax')";
 
             if ($conn->query($productSql) !== TRUE) {
                 // Error inserting product details
                 echo "Error: " . $productSql . "<br>" . $conn->error;
             }
             // Insert product into stock table
-            $stockSql = "INSERT INTO stock (product_name, price, tax, quantity)
-                VALUES ('$productName', '$price', '$tax', '$quantity')";
+            $stockSql = "INSERT INTO stock (branch_name, product_name, price, tax, quantity)
+                VALUES ('$branchName','$productName', '$price', '$tax', '$quantity')";
 
             if ($conn->query($stockSql) !== TRUE) {
                 // Error inserting stock details
@@ -378,7 +401,27 @@ function generateInvoiceNumber($conn, $companyID, $invoiceDate) {
                             <label for="billDate">Bill Date:</label>
                             <input type="date" class="form-control" name="billDate" id="billDate" required>
                         </div>
+                        <!-- Branches Dropdown -->
+                        <div class="form-group col-md-4">
+                            <label for="branch">Branch:</label>
+                            <select class="form-control" name="branch" id="branch" required>
+                                <?php
+                                    // Include your database connection code here
+                                    // Assuming you have a $conn variable for database connection
+                                    // Replace 'branches' with your actual table name
+                                    $sql = "SELECT * FROM branches";
+                                    $result = $conn->query($sql);
 
+                                    if ($result->num_rows > 0) {
+                                        while($row = $result->fetch_assoc()) {
+                                            echo "<option value='" . $row["branch_id"] . "'>" . $row["branch_name"] . "</option>";
+                                        }
+                                    } else {
+                                        echo "<option value=''>No branches found</option>";
+                                    }
+                                ?>
+                            </select>
+                        </div>
                         <!-- Subject details rows -->
                         <div id="productRowsContainer"></div>
                         <div class="form-group col-md-12">

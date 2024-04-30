@@ -33,19 +33,22 @@ function managerLogin($conn, $username, $password) {
 
 // Admin Login
 function branchadminLogin($conn, $username, $password) {
-    $sql = "SELECT branch_id FROM branch_admins WHERE admin_name = '$username' AND password = '$password'";
+    $sql = "SELECT branch_id, company_name FROM branch_admins WHERE admin_name = '$username' AND password = '$password'";
     $result = $conn->query($sql);
 
     if ($result->num_rows == 1) {
         // Fetch the branch_id from the result
         $row = $result->fetch_assoc();
         $branch_id = $row['branch_id'];
+        $company_name = $row['company_name'];
 
         // Set the branch_id in the session
         $_SESSION['branch_id'] = $branch_id;
+        $_SESSION['company_name'] = $company_name;
+
 
         // Return success status and branch_id
-        return array('success' => true, 'branch_id' => $branch_id);
+        return array('success' => true, 'branch_id' => $branch_id ,'company_name' => $company_name);
     } else {
         // Return failure status
         return array('success' => false);

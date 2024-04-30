@@ -33,7 +33,8 @@ if (isset($_POST['login'])) {
     if ($branchLoginResult['success']) {
         $_SESSION['username'] = $username; // Set the username in the session
         $_SESSION['branch_id'] = $branchLoginResult['branch_id'];
-        header("Location: branchmanager_dashboard.php");
+        $_SESSION['company_name'] = $branchLoginResult['company_name'];
+        header("Location: branchadmin_dashboard.php");
         exit();
     }
 

@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS purchase_report (
     id INT AUTO_INCREMENT PRIMARY KEY,
     bill_no VARCHAR(20) NOT NULL,
     company_id VARCHAR(4) NOT NULL,
+    branch_name VARCHAR(100) NOT NULL,
     date DATE NOT NULL,
     supplier_id INT NOT NULL,
     supplier_name VARCHAR(50) NOT NULL,
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS purchase_report (
 CREATE TABLE IF NOT EXISTS purchased_product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     bill_no VARCHAR(20) NOT NULL,
+    branch_name VARCHAR(100) NOT NULL,
     product_name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     tax DECIMAL(5, 2) NOT NULL,
@@ -87,6 +89,7 @@ CREATE TABLE IF NOT EXISTS purchased_product (
 
 CREATE TABLE IF NOT EXISTS stock (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    branch_name VARCHAR(100) NOT NULL,
     product_name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     tax DECIMAL(5, 2) NOT NULL,

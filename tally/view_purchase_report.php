@@ -65,6 +65,7 @@ $invoiceReport = getInvoiceReportByCompanyId($conn, $companyId);
                 <tr>
                     <th>Bill NO</th>
                     <th>Company ID</th>
+                    <th>Branch Name</th>
                     <th>Date</th>
                     <th>Supplier ID</th>
                     <th>Supplier Name</th>
@@ -81,6 +82,7 @@ $invoiceReport = getInvoiceReportByCompanyId($conn, $companyId);
                     <tr>
                         <td><?php echo $row['bill_no']; ?></td>
                         <td><?php echo $row['company_id']; ?></td>
+                        <td><?php echo $row['branch_name']; ?></td>
                         <td><?php echo $row['date']; ?></td>
                         <td><?php echo $row['supplier_id']; ?></td>
                         <td><?php echo $row['supplier_name']; ?></td>
